@@ -21,19 +21,19 @@ Note: Downtime of +- 4 minutes applies when the job starts.
 .PARAMETER SubscriptionId
     String that contains the id of subscription where your specified VM is a part of.
 
-.PARAMETER ResourceGroup
+.PARAMETER ResourceGroupName
     String that contains the name of resource group where your specified VM is a part of.
-
-.PARAMETER VMSize
-     String name of the desired size the specified VM will be receiving.
-
+    
 .PARAMETER VirtualMachineName
      String name of the VM that will be changed in size.
 
+.PARAMETER VirtualMachineSize
+     String name of the desired size the specified VM will be receiving.
+
 .NOTES
-	Author: Leonardo Ferreira
-	Last Updated: 04/01/2020
-    Version 1.0 - Changed Siebert Timmermans`s script to change connection.
+     Author: Leonardo Ferreira
+     Last Updated: 04/02/2020
+     Version 1.0 - Changed Siebert Timmermans`s script to change connection.
 #>
 workflow VMScale {
 	
@@ -42,16 +42,16 @@ workflow VMScale {
         [string] $SubscriptionId,
 
         [parameter(Mandatory=$true)]
-        [string] $ResourceGroup,    
+        [string] $ResourceGroupName,    
 
         [parameter(Mandatory=$true)]
         [String] $VirtualMachineName,
         
         [parameter(Mandatory=$true)]
-        [string] $VMSize
+        [string] $VirtualMachineSize
    
     )
-	inlineScript {
+    InlineScript {
 
         $connection = Get-AutomationConnection `
             -Name 'AzureRunAsConnection'
@@ -71,7 +71,7 @@ workflow VMScale {
         # Check if specified VM can be found
         Try {
             $vm = Get-AzureRmVm `
-                -ResourceGroupName $Using:ResourceGroup `
+                -ResourceGroupName $Using:ResourceGroupName `
                 -VMName $Using:VirtualMachineName `
                 -ErrorAction Stop
 
@@ -88,18 +88,18 @@ workflow VMScale {
         Write-Output "Current size: $currentVMSize"
 
         # Change to new VM Size and report
-	    $newVMSize = $Using:VMSize
+	$newVMSize = $Using:VirtualMachineSize
     
         Write-Output "`nNew size will be: $newVMSize"
         Write-Output "`n----------------------------------------------------------------------"
             
         $vm.HardwareProfile.VmSize = $newVMSize
-        Update-AzureRmVm -VM $vm -ResourceGroupName $Using:ResourceGroup
+        Update-AzureRmVm -VM $vm -ResourceGroupName $Using:ResourceGroupName
         
-        $updatedVm = Get-AzureRmVm -ResourceGroupName $Using:ResourceGroup -VMName $Using:VirtualMachineName
+        $updatedVm = Get-AzureRmVm -ResourceGroupName $Using:ResourceGroupName -VMName $Using:VirtualMachineName
         $updatedVMSize = $updatedVm.HardwareProfile.vmSize
         
         Write-Output "`n----------------------------------------------------------------------"
         Write-Output "`nSize updated to: $updatedVMSize"
- 	}
+    }
 }
