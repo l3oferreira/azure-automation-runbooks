@@ -52,7 +52,7 @@ Workflow VMScheduledScaler {
         [parameter(Mandatory=$true)][ValidateNotNullOrEmpty()]
         [string] $VMSize
     )
-	InlineScript {
+    InlineScript {
 
         $connection = Get-AutomationConnection `
             -Name $Using:ConnectionName
@@ -75,7 +75,6 @@ Workflow VMScheduledScaler {
                 -ResourceGroupName $Using:ResourceGroup `
                 -VMName $Using:VirtualMachineName `
                 -ErrorAction Stop
-
         }
         Catch {
             Write-Error "Virtual machine not found"
@@ -89,7 +88,7 @@ Workflow VMScheduledScaler {
         Write-Output "Current size: $currentVMSize"
 
         # Change to new VM Size and report
-	    $newVMSize = $Using:VMSize
+        $newVMSize = $Using:VMSize
     
         Write-Output "`nNew size will be: $newVMSize"
         Write-Output "`n----------------------------------------------------------------------"
@@ -101,6 +100,5 @@ Workflow VMScheduledScaler {
         $updatedVMSize = $updatedVm.HardwareProfile.vmSize
         
         Write-Output "`n----------------------------------------------------------------------"
-        Write-Output "`nSize updated to: $updatedVMSize"
- 	}
+    }
 }
